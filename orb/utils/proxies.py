@@ -1,9 +1,37 @@
+import logging
 from datetime import datetime
 from typing import Dict
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from orb.utils.utils import timeout
+
+log = logging.getLogger(__name__)
+
+
+def test_proxy(proxies: Dict[str, str]):
+    """
+    A testing function that can be used to test if a proxy if working.
+    Args:
+        proxies: Dictionary containing http and https proxies for testing
+    Returns:
+        Bool statement if proxy is working.
+    """
+    try:
+        # Define the URL you want to access through the proxy
+        url = 'http://www.example.com'
+
+        # Make a request using the proxy
+        response = requests.get(url, proxies=proxies, timeout=5)
+
+        # Check the response status code
+        if response.status_code == 200:
+            log.info(f"{proxies['https']} Proxy is working!")
+        else:
+            log.error(f"{proxies['https']} Proxy is NOT working!")
+    except requests.exceptions.RequestException:
+        log.error("Unable to connect to the proxy.")
 
 
 class GetProxies:
@@ -22,6 +50,7 @@ class GetProxies:
         self.date_now = todays_datetime.strftime("%Y-%m-%d")
         self.time_now = todays_datetime.strftime("%H:%M")
 
+    @timeout(seconds=10, error_message="request url method")
     def request_proxies(self) -> requests:
         """
         Sends a request to the proxy URL and returns the request object.
@@ -79,7 +108,11 @@ class GetProxies:
         ip_address = proxy_row['IP_ADDRESS'].values[0]
         port = proxy_row['PORT'].values[0]
 
-        return {
-            "http": f"http://{ip_address}:{port}",
-            "https": f"http://{ip_address}:{port}",
+        proxies = {
+            "http": f"{ip_address}:{port}",
+            "https": f"{ip_address}:{port}",
         }
+
+        if test_proxy(proxies=proxies):
+            return proxies
+        self.proxy_dict()
