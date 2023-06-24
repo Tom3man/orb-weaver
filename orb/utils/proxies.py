@@ -5,7 +5,7 @@ from typing import Dict
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from orb.utils.decorators import timeout
+from orb.utils.decorators import retry_on_failure, timeout
 
 log = logging.getLogger(__name__)
 
@@ -91,7 +91,9 @@ class GetProxies:
         headers = None
         for tr in self.extract_table_html().find_all('tr'):
             if not headers:
-                headers = [td.text.upper().replace(" ", "_") for td in tr.find_all(['th', 'td'])]
+                headers = [
+                    td.text.upper().replace(" ", "_") for td in tr.find_all(['th', 'td'])
+                ]
                 df = pd.DataFrame(columns=headers)
                 continue
 
@@ -116,6 +118,8 @@ class GetProxies:
         }
 
     @property
+    @retry_on_failure(max_retries=5)
+    @timeout(seconds=10, error_message="request url method")
     def proxy_dict(self) -> Dict[str, str]:
         """
         Property that returns the proxy dictionary.
@@ -124,9 +128,10 @@ class GetProxies:
             Dict[str, str]: The dictionary containing HTTP and HTTPS proxy values.
 
         Raises:
-            RecursionError: If the proxy fails the test, the property calls itself recursively.
+            RuntimeError: If a working proxy cannot be found after maximum retries.
         """
+
         self.build_proxy_dict()
         if test_proxy(proxies=self.proxies):
             return self.proxies
-        self.proxy_dict()
+        raise RuntimeError("Failed to find a working proxy.")

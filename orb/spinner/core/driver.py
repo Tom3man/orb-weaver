@@ -1,93 +1,102 @@
 import logging
-import random
 from typing import Dict
 
-from orb.spinner.utils.spoofing import DriverSpoofing
+from orb.spinner.utils import build_welcome_page
 from orb.utils import GetProxies, GetUserAgent
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 log = logging.getLogger(__name__)
 
 
 class OrbDriver:
-
     """
-    This class builds an instance of a chrome driver utilising a random proxy and headers (which can be rotated).
-    The driver instance can be created using the get_webdriver method.
+    This class builds an instance of a Chrome WebDriver utilizing a random proxy and headers (which can be rotated).
+    The driver instance can be created using the `get_webdriver` method.
     """
 
-    def __init__(self, *args, **kwargs):
-        self.driver_spoof = DriverSpoofing()
+    def __init__(self, headless=None) -> None:
+        """
+        Initialize OrbDriver.
 
-        if kwargs.get('headless'):
-            self.headless = kwargs['headless']
-        else:
-            self.headless = None
-
+        Args:
+            headless (bool): Optional. Whether to run the browser in headless mode.
+        """
+        self.headless = headless
         self.driver_install = None
+        self.proxy_dict = None
 
     @property
-    def random_user_agent(self) -> 'GetUserAgent':
+    def random_user_agent(self) -> str:
+        """
+        Get a random User-Agent string.
+
+        Returns:
+            str: A random User-Agent string.
+        """
         return GetUserAgent().headers_dict['User-Agent']
 
     @property
-    def random_proxy(self) -> 'GetProxies':
-        return GetProxies().proxy_dict['https']
+    def random_proxy(self) -> Dict[str, str]:
+        """
+        Get a random proxy.
+
+        Returns:
+            str: A random proxy.
+
+        Raises:
+            RuntimeError: If a working proxy cannot be found.
+        """
+        self.proxy_dict = GetProxies().proxy_dict
+        if self.proxy_dict:
+            return self.proxy_dict['https']
+        raise RuntimeError("Failed to find a working proxy.")
 
     def _webdriver_options_init(self):
-
-        # Initialise webdriver options
+        """
+        Initialize WebDriver options.
+        """
         self.webdriver_options = Options()
-
-        # Default webdriver options
-        # Disable javascript
         self.webdriver_options.add_argument("--disable-javascript")
 
-        # Set to headless if applicable
         if self.headless:
             self.webdriver_options.add_argument("--headless")
 
-        # Set the user agent string
         user_agent = self.random_user_agent
-        log.info(f"Initialising webdriver with user-agent: {user_agent} ")
+        log.info(f"Initializing WebDriver with user-agent: {user_agent}")
         self.webdriver_options.add_argument(f"user-agent={user_agent}")
 
-        # Set the proxy string
         proxy = self.random_proxy
-        log.info(f"Initialising webdriver with proxy: {proxy} ")
+        log.info(f"Initializing WebDriver with proxy: {proxy}")
         self.webdriver_options.add_argument(f'--proxy-server={proxy}')
 
-    def change_driver_viewport(self):
-
-        self.driver_spoof.change_viewport_size(
-            driver=self.driver
-        )
-
     def driver_init__(self):
-
-        # Always install the latest web driver
+        """
+        Initialize WebDriver installation.
+        """
         self.driver_install = ChromeDriverManager().install()
 
-    def get_webdriver(self) -> webdriver.Chrome:
+    def get_webdriver(self):
+        """
+        Gets an instance of the Chrome WebDriver.
 
-        # Initialise webdriver options
+        Returns:
+            selenium.webdriver.Chrome: An instance of the Chrome WebDriver.
+        """
         self._webdriver_options_init()
 
-        # Always install the latest web driver
-        # Initialize the webdriver with the options
         if not self.driver_install:
             self.driver_init__()
-            self.driver = webdriver.Chrome(self.driver_install, options=self.webdriver_options)
+            self.driver = webdriver.Chrome(
+                self.driver_install, options=self.webdriver_options)
 
         self.driver = webdriver.Chrome(options=self.webdriver_options)
 
-        return self.driver
+        # Builds a landing page for the driver to start at
+        build_welcome_page(
+            driver=self.driver,
+            proxy_info=self.proxy_dict,
+        )
 
-    def get_url(self, driver: webdriver.Chrome = None):
-        if not driver:
-            self.driver = self.get_webdriver()
-        else:
-            self.driver = driver
+        return self.driver
