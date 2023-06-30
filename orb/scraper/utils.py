@@ -5,8 +5,8 @@ This script provides several methods for spoofing requests.
 import logging
 
 import requests
-from orb.utils.user_agents import GetUserAgent
-from orb.utils.proxies import GetProxies
+from orb.common.user_agents.user_agents import GetUserAgent
+from orb.common.proxies.get_proxies import GetProxies
 
 log = logging.getLogger(__name__)
 

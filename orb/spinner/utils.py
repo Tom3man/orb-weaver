@@ -3,46 +3,17 @@ This script provides several methods for simulating human behavior in browser au
 """
 
 import logging
-import os
 import random
 import time
 from typing import Union
 
-from orb import REPO_PATH
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-from orb.utils.utils import create_welcome_page
 
 log = logging.getLogger(__name__)
-
-
-def build_welcome_page(
-    driver: WebDriver,
-    proxy_info: str,
-) -> None:
-    """
-    Build a welcome page using the provided WebDriver and proxy info.
-    Webpage is then rendered with the active driver and subsequently deleted to not store any sensitive information locally.
-    Args:
-        driver (WebDriver): The WebDriver instance.
-        proxy_info (str): Proxy information.
-        user_agent (str, optional): User agent information. Defaults to None.
-    """
-
-    page_content = create_welcome_page(
-        user_agent=get_user_agent(driver=driver),
-        proxy_info=proxy_info,
-    )
-
-    file_path = f"{REPO_PATH}/proxy_info.html"
-    with open(file_path, 'w') as file:
-        file.write(page_content)
-
-    driver.get(f'file://{file_path}')
-    os.remove(file_path)
 
 
 def get_user_agent(driver: WebDriver) -> str:

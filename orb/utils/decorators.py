@@ -1,5 +1,5 @@
 """
-THis script hosts several decorators that can be used for error handeling methods.
+This script hosts several decorators that can be used for error handeling methods.
 """
 
 import functools

@@ -4,34 +4,11 @@ from typing import Dict
 
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
-from orb.utils.decorators import retry_on_failure, timeout
+from bs4 import BeautifulSoup, Tag
+
+from orb.common.proxies.test_proxies import test_proxy
 
 log = logging.getLogger(__name__)
-
-
-def test_proxy(proxies: Dict[str, str]) -> bool:
-    """
-    Test the functionality of a proxy by making a request to a sample URL.
-
-    Args:
-        proxies (Dict[str, str]): Dictionary containing HTTP and HTTPS proxies.
-
-    Returns:
-        bool: True if the proxy is working, False otherwise.
-    """
-    try:
-        url = 'http://www.example.com'
-        response = requests.get(url, proxies=proxies, timeout=5)
-        if response.status_code == 200:
-            log.info(f"{proxies['https']} Proxy is working!")
-            return True
-        else:
-            log.error(f"{proxies['https']} Proxy is NOT working!")
-            return False
-    except requests.exceptions.RequestException:
-        log.error("Unable to connect to the proxy.")
-        return False
 
 
 class GetProxies:
@@ -49,7 +26,6 @@ class GetProxies:
         self.date_now = todays_datetime.strftime("%Y-%m-%d")
         self.time_now = todays_datetime.strftime("%H:%M")
 
-    @timeout(seconds=10, error_message="request url method")
     def request_proxies(self) -> requests.Response:
         """
         Sends a request to the proxy URL and returns the response object.
@@ -68,7 +44,7 @@ class GetProxies:
         """
         return BeautifulSoup(self.request_proxies().content, 'html.parser')
 
-    def extract_table_html(self) -> BeautifulSoup:
+    def extract_table_html(self) -> Tag:
         """
         Extracts the raw HTML of the table containing the proxy information.
 
@@ -118,8 +94,6 @@ class GetProxies:
         }
 
     @property
-    @retry_on_failure(max_retries=5)
-    @timeout(seconds=10, error_message="request url method")
     def proxy_dict(self) -> Dict[str, str]:
         """
         Property that returns the proxy dictionary.

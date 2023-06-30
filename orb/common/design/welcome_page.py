@@ -1,5 +1,11 @@
+import os
 import socket
+
 import requests
+from selenium.webdriver.remote.webdriver import WebDriver
+
+from orb import REPO_PATH
+from orb.spinner.utils import get_user_agent
 
 
 def create_welcome_page(
@@ -64,3 +70,29 @@ def get_public_ip() -> str:
     """
     response = requests.get('https://api.ipify.org')
     return response.text
+
+
+def build_welcome_page(
+    driver: WebDriver,
+    proxy_info: str,
+) -> None:
+    """
+    Build a welcome page using the provided WebDriver and proxy info.
+    Webpage is then rendered with the active driver and subsequently deleted to not store any sensitive information locally.
+    Args:
+        driver (WebDriver): The WebDriver instance.
+        proxy_info (str): Proxy information.
+        user_agent (str, optional): User agent information. Defaults to None.
+    """
+
+    page_content = create_welcome_page(
+        user_agent=get_user_agent(driver=driver),
+        proxy_info=proxy_info,
+    )
+
+    file_path = f"{REPO_PATH}/proxy_info.html"
+    with open(file_path, 'w') as file:
+        file.write(page_content)
+
+    driver.get(f'file://{file_path}')
+    os.remove(file_path)
