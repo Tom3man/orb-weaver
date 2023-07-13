@@ -161,3 +161,6 @@ cython_debug/
 
 .playarea
 playarea/
+
+.vscode
+vscode/
