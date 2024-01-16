@@ -2,7 +2,7 @@ import logging
 import random
 import subprocess
 from sys import platform
-from typing import List, Union
+from typing import List, Union, Optional
 
 from orb.utils.decorators import retry_on_failure, timeout
 
@@ -29,7 +29,7 @@ class PiaVpn:
         disconnect: Disconnect from the VPN.
     """
 
-    def __init__(self, executable_path: str = None) -> None:
+    def __init__(self, executable_path: Optional[str] = None) -> None:
         """
         Initialize the PiaVpn class.
 
@@ -75,7 +75,7 @@ class PiaVpn:
 
         return output.splitlines()
 
-    def set_region(self, region: str = None) -> None:
+    def set_region(self, region: Optional[str] = None) -> None:
         """
         Set the VPN region.
 
@@ -105,7 +105,7 @@ class PiaVpn:
         command = [self.piapath, "set", "region", server]
         subprocess.check_output(command, text=True).strip()
 
-    def vpn_status(self, as_bool: bool = False) -> Union[str, bool]:
+    def vpn_status(self, as_bool: Optional[bool] = False) -> Union[str, bool]:
         """
         Get the VPN connection status.
 
