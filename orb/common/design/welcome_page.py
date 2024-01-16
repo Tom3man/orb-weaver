@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 import socket
 
 import requests
@@ -9,8 +10,8 @@ from orb.spinner.utils import get_user_agent
 
 
 def create_welcome_page(
-    proxy_info: str = None,
-    user_agent: str = None
+    proxy_info: Optional[str] = None,
+    user_agent: Optional[str] = None
 ) -> str:
     """
     Create a welcome page HTML content with IP, proxy, and user agent information.
@@ -74,7 +75,7 @@ def get_public_ip() -> str:
 
 def build_welcome_page(
     driver: WebDriver,
-    proxy_info: str,
+    proxy_info: Optional[str] = None,
 ) -> None:
     """
     Build a welcome page using the provided WebDriver and proxy info.
