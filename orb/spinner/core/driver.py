@@ -128,7 +128,7 @@ class OrbDriver:
 
     def set_driver(self, driver):
         """
-        Set the driver instance. THis is useful for testing.
+        Set the driver instance. This is useful for testing.
 
         Args:
             driver: The WebDriver instance to set.
