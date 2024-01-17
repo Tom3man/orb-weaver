@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -9,7 +8,6 @@ from selenium.webdriver.chrome.service import Service
 from orb.common.vpn import PiaVpn
 from orb.common.design.welcome_page import build_welcome_page
 from orb.utils import GetUserAgent
-from orb.utils.decorators import retry_on_failure
 
 log = logging.getLogger(__name__)
 
