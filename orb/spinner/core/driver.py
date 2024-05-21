@@ -83,7 +83,8 @@ class OrbDriver:
         """
         self._webdriver_init__()
 
-        self.driver = webdriver.Chrome(service=self.webdriver_service, options=self.webdriver_options)
+        self.driver = webdriver.Chrome(
+            service=self.webdriver_service, options=self.webdriver_options)
 
         # Builds a landing page for the driver to start at
         build_welcome_page(driver=self.driver)
