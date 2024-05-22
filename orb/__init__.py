@@ -1,5 +1,6 @@
-from .spinner.core.driver import OrbDriver
+__version__ = "0.0.1"
 
-__all__ = [
-    OrbDriver
-]
+import os
+
+MODULE_PATH = os.path.dirname(os.path.realpath(__file__))
+REPO_PATH = os.path.dirname(MODULE_PATH)

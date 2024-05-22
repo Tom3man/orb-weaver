@@ -6,6 +6,7 @@ import requests
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from orb.spinner.utils import get_user_agent
+from orb import REPO_PATH
 
 
 def create_welcome_page(
@@ -90,7 +91,7 @@ def build_welcome_page(
         proxy_info=proxy_info,
     )
 
-    file_path = "proxy_info.html"
+    file_path = f"{REPO_PATH}/proxy_info.html"
     with open(file_path, 'w') as file:
         file.write(page_content)
 
