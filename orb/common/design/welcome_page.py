@@ -1,17 +1,17 @@
 import os
-from typing import Optional
 import socket
+from typing import Optional
 
 import requests
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from orb.spinner.utils import get_user_agent
 from orb import REPO_PATH
+from orb.spinner.utils import get_user_agent
 
 
 def create_welcome_page(
     proxy_info: Optional[str] = None,
-    user_agent: Optional[str] = None
+    user_agent: Optional[str] = None,
 ) -> str:
     """
     Create a welcome page HTML content with IP, proxy, and user agent information.
@@ -79,7 +79,7 @@ def build_welcome_page(
 ) -> None:
     """
     Build a welcome page using the provided WebDriver and proxy info.
-    Webpage is then rendered with the active driver and subsequently deleted to not store any sensitive information locally.
+    Webpage is then rendered with the active driver and then deleted to not store any sensitive information locally.
     Args:
         driver (WebDriver): The WebDriver instance.
         proxy_info (str): Proxy information.

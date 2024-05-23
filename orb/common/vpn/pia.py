@@ -2,7 +2,7 @@ import logging
 import random
 import subprocess
 from sys import platform
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 from orb.utils.decorators import retry_on_failure, timeout
 

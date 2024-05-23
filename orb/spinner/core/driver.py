@@ -2,11 +2,11 @@ import logging
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
-from orb.common.vpn import PiaVpn
 from orb.common.design.welcome_page import build_welcome_page
+from orb.common.vpn import PiaVpn
 from orb.utils import GetUserAgent
 
 log = logging.getLogger(__name__)

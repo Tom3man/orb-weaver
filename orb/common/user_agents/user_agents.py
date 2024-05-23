@@ -1,7 +1,8 @@
+import random
 from typing import Dict
 
-import random
 from fake_useragent import UserAgent
+
 
 class GetUserAgent:
     """
