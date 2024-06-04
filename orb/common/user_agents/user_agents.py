@@ -48,7 +48,7 @@ class GetUserAgent:
         Returns:
             dict: A dictionary with the 'User-Agent' key, random user agent, and a randomly chosen referer URL.
         """
-        headers = {
+        return {
             "User-Agent": self.user_agent.random,
             "Accept-Language": random.choice(self.accept_languages),
             "Referer": self.get_random_referer(),
@@ -60,4 +60,3 @@ class GetUserAgent:
             "X-Frame-Options": "DENY" if random.random() < 0.5 else "SAMEORIGIN",
             "Connection": "keep-alive" if random.random() < 0.8 else "close",
         }
-        return headers

@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, Optional
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -18,11 +19,12 @@ class OrbDriver:
     HTTPS/SSL proxy, and custom user-agent.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, webdriver_path: Optional[str] = None) -> None:
         """
         Initialize OrbDriver with default options.
         """
         self.driver = None
+        self.webdriver_path = webdriver_path
         self.webdriver_options = Options()
 
         # Placeholder for PiaVpn instance
@@ -30,17 +32,25 @@ class OrbDriver:
 
     def _webdriver_init__(self) -> None:
         """
-        Initialize WebDriver installation and options.
+        Initialise WebDriver installation and options.
         """
         # Download latest webdriver
-        self.webdriver_path = ChromeDriverManager().install()
+        if not self.webdriver_path:
+            self.webdriver_path = ChromeDriverManager().install()
         self.webdriver_service = Service(executable_path=self.webdriver_path)
 
         # Common options for WebDriver
         self.webdriver_options.add_argument("--disable-javascript")
         self.webdriver_options.add_argument('--no-sandbox')
         self.webdriver_options.add_argument('--disable-dev-shm-usage')
-
+        self.webdriver_options.add_argument('--blink-settings=imagesEnabled=false')
+        self.webdriver_options.add_argument('--disable-extensions')
+        self.webdriver_options.add_argument('--disable-blink-features=AutomationControlled')
+        self.webdriver_options.add_argument('--disable-gpu')
+        self.webdriver_options.add_argument('--window-size=1920x1080')
+        self.webdriver_options.add_argument('--log-level=3')
+        self.webdriver_options.add_argument('--disable-web-security')
+        self.webdriver_options.add_argument(f"user-agent={self.set_user_agent()}")
         self.capabilities = webdriver.DesiredCapabilities.CHROME
 
     def change_ip_address(self) -> None:
@@ -60,9 +70,9 @@ class OrbDriver:
             OrbDriver: The OrbDriver instance for method chaining.
         """
         self.webdriver_options.add_argument("--headless")
-        return self  # Return instance for method chaining
+        return self
 
-    def set_user_agent(self) -> 'OrbDriver':
+    def set_user_agent(self) -> Dict[str, str]:
         """
         Set a random user-agent for the WebDriver.
 
@@ -70,11 +80,10 @@ class OrbDriver:
             OrbDriver: The OrbDriver instance for method chaining.
         """
         user_agent = GetUserAgent().headers_dict['User-Agent']
-        log.info(f"Initializing WebDriver with user-agent: {user_agent}")
-        self.webdriver_options.add_argument(f"user-agent={user_agent}")
-        return self  # Return instance for method chaining
+        log.info(f"Initialising WebDriver with user-agent: {user_agent}")
+        return user_agent
 
-    def get_webdriver(self) -> webdriver.Chrome:
+    def get_webdriver(self, url: Optional[str] = None) -> webdriver.Chrome:
         """
         Get an instance of the Chrome WebDriver.
 
@@ -85,6 +94,10 @@ class OrbDriver:
 
         self.driver = webdriver.Chrome(
             service=self.webdriver_service, options=self.webdriver_options)
+
+        if url:
+            self.driver.get(url=url)
+            return self.driver
 
         # Builds a landing page for the driver to start at
         build_welcome_page(driver=self.driver)
