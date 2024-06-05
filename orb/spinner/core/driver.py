@@ -104,6 +104,32 @@ class OrbDriver:
 
         return self.driver
 
+    def refresh_driver(self) -> webdriver.Chrome:
+        """
+        Refreshes the given WebDriver instance by closing the current session and creating a new one.
+
+        Args:
+            driver (webdriver.Chrome): The current WebDriver instance to be refreshed.
+
+        Returns:
+            webdriver.Chrome: A new WebDriver instance pointing to the same URL as the closed session.
+        """
+        # Store the current URL
+        current_url = self.driver.current_url
+
+        # Close the current WebDriver session
+        self.driver.quit()
+
+        if current_url.split('.')[-1] == 'html':
+            self.driver = self.get_webdriver()
+            build_welcome_page(driver=self.driver)
+
+        else:
+            # Initialise a new WebDriver session with the same URL
+            self.driver = self.get_webdriver(url=current_url)
+
+        return self.driver
+
     def set_driver(self, driver: webdriver.Chrome) -> None:
         """
         Set the WebDriver instance. Useful for testing.

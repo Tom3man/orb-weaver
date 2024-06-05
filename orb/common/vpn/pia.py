@@ -1,6 +1,7 @@
 import logging
 import random
 import subprocess
+import time
 from sys import platform
 from typing import List, Optional, Union
 
@@ -23,8 +24,8 @@ class PiaVpn:
         get_available_regions: Get a list of all available regions.
         set_region: Set the VPN region.
         vpn_status: Get the VPN connection status.
-        get_vpn_ip: Get the VPN IP address.
-        get_public_ip: Get the public IP address.
+        vpn_ip: Get the VPN IP address.
+        public_ip: Get the public IP address.
         connect: Connect to the VPN.
         disconnect: Disconnect from the VPN.
     """
@@ -45,6 +46,7 @@ class PiaVpn:
         elif platform == "linux":
             self.piapath = "piactl"
 
+    @property
     def get_current_region(self) -> str:
         """
         Get the currently selected region.
@@ -56,13 +58,17 @@ class PiaVpn:
             RuntimeError: If the VPN is not connected.
         """
         if not self.vpn_status(as_bool=True):
-            raise RuntimeError("VPN is not connected. Call connect method first")
+            log.debug("VPN is not connected. Connecting to random region")
+            self.connect()
+            self._wait_for_connect()
+            self.get_current_region
 
         command = [self.piapath, "get", "region"]
         output = subprocess.check_output(command, text=True).strip()
 
         return output
 
+    @property
     def get_available_regions(self) -> List[str]:
         """
         Get a list of all available regions.
@@ -89,17 +95,19 @@ class PiaVpn:
         if not self.vpn_status(as_bool=True):
             log.info("VPN was not connected, starting up and changing regions")
             self.connect()
+            # If no specfic region is set, return, else rotate
+            if not region:
+                return
 
-        available_regions = self.get_available_regions()
+        available_regions = self.get_available_regions
 
-        if not region or region.lower() == "auto":
-            server = "auto"
-        elif region.lower() == "random":
-            server = random.choice(available_regions)
-        elif region.lower() not in available_regions:
-            raise ValueError("Server region provided does not exist.")
+        if region:
+            if region.lower() not in available_regions:
+                raise ValueError("Server region provided does not exist.")
+            else:
+                server = region
         else:
-            server = region
+            server = random.choice(available_regions)
 
         log.info(f"Setting VPN to {server} server.")
         command = [self.piapath, "set", "region", server]
@@ -127,7 +135,8 @@ class PiaVpn:
             return output == "Connected"
         return output
 
-    def get_vpn_ip(self) -> str:
+    @property
+    def vpn_ip(self) -> str:
         """
         Get the VPN IP address.
 
@@ -142,7 +151,8 @@ class PiaVpn:
 
         return output
 
-    def get_public_ip(self) -> str:
+    @property
+    def public_ip(self) -> str:
         """
         Get the public IP address.
 
@@ -157,6 +167,33 @@ class PiaVpn:
 
         return output
 
+    @retry_on_failure(max_retries=1)
+    @timeout(seconds=10)
+    def _wait_for_connect(self) -> None:
+        """
+        Helper function that waits until the status of the VPN says connected.
+
+        Can be used in VPN switching to ensure the user can carry out other tasks.
+        """
+
+        status = self.vpn_status(as_bool=True)
+        while not status:
+            time.sleep(1)
+            status = self.vpn_status(as_bool=True)
+
+    def rotate_vpn(self):
+        """
+        Rotate the VPN to a random region.
+        """
+        current_region = self.get_current_region
+        self.set_region(region=None)
+
+        self._wait_for_connect()
+
+        new_region = self.get_current_region
+
+        log.info(f"VPN has changed from from {current_region} to {new_region}")
+
     @retry_on_failure(max_retries=2)
     @timeout(seconds=10)
     def connect(self):
@@ -168,12 +205,15 @@ class PiaVpn:
         """
         if self.vpn_status(as_bool=True):
             log.info(
-                f"VPN server is already connected to {self.get_current_region()} region")
+                f"VPN server is already connected to {self.get_current_region} region")
             return
 
         command = [self.piapath, "connect"]
         subprocess.check_output(command, text=True).strip()
-        log.info(f"VPN connected to {self.get_current_region()} region.")
+
+        self._wait_for_connect()
+
+        log.info(f"VPN connected to {self.get_current_region} region.")
 
     @retry_on_failure(max_retries=2)
     @timeout(seconds=10)

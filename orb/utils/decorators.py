@@ -3,11 +3,18 @@ This script hosts several decorators that can be used for error handeling method
 """
 
 import functools
-import logging
+import random
 import signal
 import time
+from functools import wraps
+from threading import Lock
+from typing import Optional
 
-log = logging.getLogger(__name__)
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+import orb.spinner.utils as orb_utils
+from orb import log
+from orb.common.vpn import PiaVpn
 
 
 class TimeoutError(Exception):
@@ -111,3 +118,42 @@ def retry_on_failure(max_retries: int = 2):
             log.error(f"Function {func.__name__} failed after {max_retries+1} retries.")
         return wrapper_retry
     return decorator_retry
+
+
+ip_change_lock = Lock()
+
+
+def manage_browser_settings(
+        vpn_switch: Optional[int] = 50,
+        driver_refresh: Optional[int] = 25,
+        change_window_size: Optional[int] = 10,
+):
+    """
+    Decorator to randomly change browser settings to mimic human behavior and avoid detection.
+
+    Args:
+        orb (OrbDriver): Custom driver class instance used to manage settings.
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(driver: WebDriver, *args, **kwargs):
+            # Randomly change viewport size
+            if random.randint(1, change_window_size) == 2:
+                orb_utils.change_viewport_size(driver=driver)
+
+            # Randomly change IP address
+            if random.randint(1, vpn_switch) == 2:
+                with ip_change_lock:
+                    PiaVpn().rotate_vpn()
+
+            # Randomly refresh the driver
+            if random.randint(1, driver_refresh) == 2:
+                log.info("Refreshing Driver")
+                driver = orb.refresh_driver()
+
+            # Call the original function
+            result = func(driver, *args, **kwargs)
+            return result
+
+        return wrapper
+    return decorator
