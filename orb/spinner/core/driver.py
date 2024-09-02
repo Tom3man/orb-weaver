@@ -19,7 +19,7 @@ class OrbDriver:
     HTTPS/SSL proxy, and custom user-agent.
     """
 
-    def __init__(self, webdriver_path: Optional[str] = None) -> None:
+    def __init__(self, webdriver_path: Optional[str] = None, use_pia: Optional[bool] = True) -> None:
         """
         Initialize OrbDriver with default options.
         """
@@ -28,7 +28,10 @@ class OrbDriver:
         self.webdriver_options = Options()
 
         # Placeholder for PiaVpn instance
-        self.pia = PiaVpn()
+        if use_pia:
+            self.pia = PiaVpn()
+        else:
+            self.pia = None
 
     def _webdriver_init__(self) -> None:
         """
