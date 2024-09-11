@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from orb.common.design.welcome_page import build_welcome_page
+# from orb.common.design.welcome_page import build_welcome_page
 from orb.common.vpn import PiaVpn
 from orb.utils import GetUserAgent
 
@@ -102,8 +102,8 @@ class OrbDriver:
             self.driver.get(url=url)
             return self.driver
 
-        # Builds a landing page for the driver to start at
-        build_welcome_page(driver=self.driver)
+        # # Builds a landing page for the driver to start at
+        # build_welcome_page(driver=self.driver)
 
         return self.driver
 
@@ -123,13 +123,12 @@ class OrbDriver:
         # Close the current WebDriver session
         self.driver.quit()
 
-        if current_url.split('.')[-1] == 'html':
-            self.driver = self.get_webdriver()
-            build_welcome_page(driver=self.driver)
+        # if current_url.split('.')[-1] == 'html':
+        #     self.driver = self.get_webdriver()
+        #     build_welcome_page(driver=self.driver)
 
-        else:
-            # Initialise a new WebDriver session with the same URL
-            self.driver = self.get_webdriver(url=current_url)
+        # Initialise a new WebDriver session with the same URL
+        self.driver = self.get_webdriver(url=current_url)
 
         return self.driver
 
