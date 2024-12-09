@@ -5,13 +5,18 @@ This script provides several methods for simulating human behavior in browser au
 import logging
 import random
 import time
-from typing import Union
+from typing import Optional, Tuple, Union
 
-from selenium.common.exceptions import MoveTargetOutOfBoundsException
+from selenium.common.exceptions import (MoveTargetOutOfBoundsException,
+                                        StaleElementReferenceException,
+                                        TimeoutException)
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 log = logging.getLogger(__name__)
 
@@ -165,3 +170,36 @@ def change_viewport_size(
     """
     driver.set_window_size(width=width, height=height)
     log.info(f"Driver window size reset to (h{height}, w{width})")
+
+
+def find_element_with_retry(
+    driver: WebDriver,
+    locator: Tuple[By, str],
+    retries: Optional[int] = 3,
+    wait_time: Optional[int] = 30
+) -> WebElement:
+    """
+    Locates a web element with retries in case of StaleElementReferenceException or TimeoutException.
+
+    Args:
+        driver (WebDriver): The Selenium WebDriver instance.
+        locator (Tuple[By, str]): The locator strategy and value as a tuple (e.g., (By.ID, "element_id")).
+        retries (Optional[int]): Number of retry attempts if a StaleElementReferenceException occurs. Default is 3.
+        wait_time (Optional[int]): Maximum wait time for each retry in seconds. Default is 30.
+
+    Returns:
+        WebElement: The located web element.
+
+    Raises:
+        TimeoutException: If the element is not found within the wait time across retries.
+        StaleElementReferenceException: If the element remains inaccessible after retries.
+    """
+    for attempt in range(1, retries + 1):
+        try:
+            log.debug(f"Attempt {attempt} to locate element with locator: {locator}")
+            return WebDriverWait(driver, wait_time).until(ec.presence_of_element_located(locator))
+        except (StaleElementReferenceException, TimeoutException) as e:
+            log.warning(f"Attempt {attempt} failed: {e.__class__.__name__} - {e}")
+            if attempt == retries:
+                log.error(f"Failed to locate element after {retries} attempts.")
+                raise

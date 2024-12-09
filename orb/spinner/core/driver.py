@@ -21,7 +21,7 @@ class OrbDriver:
 
     def __init__(self, webdriver_path: Optional[str] = None, use_pia: Optional[bool] = True) -> None:
         """
-        Initialize OrbDriver with default options.
+        Initialise OrbDriver with default options.
         """
         self.driver = None
         self.webdriver_path = webdriver_path
