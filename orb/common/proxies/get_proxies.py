@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 from orb.common.proxies.test_proxies import test_proxy
+from orb.net import request_get_with_retry
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class GetProxies:
         Returns:
             requests.Response: The response object from the request.
         """
-        return requests.get(self.PROXY_SITE)
+        return request_get_with_retry(self.PROXY_SITE, timeout=10, max_retries=3, backoff_seconds=0.5)
 
     def parse_requests(self) -> BeautifulSoup:
         """

@@ -8,6 +8,8 @@ import requests
 
 from orb.common.proxies.get_proxies import GetProxies
 from orb.common.user_agents.user_agents import GetUserAgent
+from orb.config import OrbConfig
+from orb.net import request_get_with_retry
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +19,9 @@ def spoof_request(
     use_proxies: bool = True,
     use_user_agent: bool = True,
     timeout: int = 15,
+    max_retries: int = 3,
+    backoff_seconds: float = 0.5,
+    config: OrbConfig | None = None,
 ) -> requests.Response:
     """
     Send a request to a URL with a spoofed user agent and optional proxies.
@@ -33,6 +38,13 @@ def spoof_request(
     headers = None
     proxies = None
 
+    if config is not None:
+        use_proxies = config.use_proxies
+        use_user_agent = config.use_user_agent
+        timeout = config.request_timeout
+        max_retries = config.max_retries
+        backoff_seconds = config.backoff_seconds
+
     # Get a random user agent
     if use_user_agent:
         headers = GetUserAgent().headers_dict
@@ -42,4 +54,11 @@ def spoof_request(
         proxies = GetProxies().proxy_dict
         log.info(f"Using proxy with HTTPS: {proxies['https']}")
 
-    return requests.get(url, headers=headers, proxies=proxies, timeout=timeout)
+    return request_get_with_retry(
+        url,
+        headers=headers,
+        proxies=proxies,
+        timeout=timeout,
+        max_retries=max_retries,
+        backoff_seconds=backoff_seconds,
+    )

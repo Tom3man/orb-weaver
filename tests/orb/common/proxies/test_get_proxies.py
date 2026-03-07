@@ -21,7 +21,8 @@ class GetProxiesTests(unittest.TestCase):
             response = MagicMock()
             mock_get.return_value = response
             self.assertEqual(self.getproxies.request_proxies(), response)
-            mock_get.assert_called_once_with(GetProxies.PROXY_SITE)
+            mock_get.assert_called_once()
+            self.assertEqual(mock_get.call_args.args[0], GetProxies.PROXY_SITE)
 
     def test_parse_requests(self):
         with patch.object(self.getproxies, 'request_proxies') as mock_request:
@@ -41,7 +42,12 @@ class GetProxiesTests(unittest.TestCase):
 
     def test_return_proxy_table(self):
         with patch.object(self.getproxies, 'extract_table_html') as mock_extract:
-            soup = BeautifulSoup('<table><thead><tr><th>IP</th><th>Port</th></tr></thead><tbody><tr><td>1.2.3.4</td><td>8080</td></tr><tr><td>5.6.7.8</td><td>8888</td></tr></tbody></table>', 'html.parser')
+            html = (
+                "<table><thead><tr><th>IP</th><th>Port</th></tr></thead><tbody>"
+                "<tr><td>1.2.3.4</td><td>8080</td></tr>"
+                "<tr><td>5.6.7.8</td><td>8888</td></tr></tbody></table>"
+            )
+            soup = BeautifulSoup(html, 'html.parser')
             mock_extract.return_value = soup
             proxy_table = self.getproxies.return_proxy_table(https_only=False)
             print(proxy_table)  # Added print statement
@@ -54,7 +60,10 @@ class GetProxiesTests(unittest.TestCase):
             df = pd.DataFrame({'IP_ADDRESS': ['1.2.3.4'], 'PORT': ['8080'], 'HTTPS': ['yes']})
             mock_return.return_value = df
             self.getproxies.build_proxy_dict()
-            self.assertEqual(self.getproxies.proxies, {'http': '1.2.3.4:8080', 'https': '1.2.3.4:8080'})
+            self.assertEqual(
+                self.getproxies.proxies,
+                {'http': '1.2.3.4:8080', 'https': '1.2.3.4:8080'},
+            )
 
 
 if __name__ == '__main__':

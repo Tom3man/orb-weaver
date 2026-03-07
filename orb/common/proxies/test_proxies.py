@@ -3,6 +3,8 @@ from typing import Dict
 
 import requests
 
+from orb.net import request_get_with_retry
+
 log = logging.getLogger(__name__)
 __test__ = False
 
@@ -19,7 +21,13 @@ def test_proxy(proxies: Dict[str, str]) -> bool:
     """
     try:
         url = 'http://www.example.com'
-        response = requests.get(url, proxies=proxies, timeout=5)
+        response = request_get_with_retry(
+            url,
+            proxies=proxies,
+            timeout=5,
+            max_retries=2,
+            backoff_seconds=0.25,
+        )
         if response.status_code == 200:
             log.info(f"{proxies['https']} Proxy is working!")
             return True

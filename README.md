@@ -1,96 +1,100 @@
-# Orb Weaver
+# Orb Weaver Tools
 
-Utilities for stealth-oriented web scraping with Selenium helpers, rotating headers, and proxy support.
+Utilities for stealth-oriented scraping workflows: Selenium driver setup, rotating headers, proxy support, and browser interaction helpers.
 
 ## Features
 
-- Selenium driver bootstrap via `OrbDriver`
-- Randomized user-agent and request headers
-- Proxy harvesting and validation utilities
-- Human-like browser interaction helpers (`slow_type`, random clicking, scroll, viewport changes)
-- Optional PIA VPN integration for IP rotation
+- `OrbDriver` Selenium bootstrap with optional PIA VPN support
+- Spoofed requests with rotating headers and optional proxies
+- Proxy harvesting and validation helpers
+- Human-like browser interaction utilities
+- CLI for common actions (`orb version`, `orb user-agent`, `orb spoof-request`)
+- Retry/backoff for network calls
 
 ## Installation
 
-From PyPI (after publish):
+Base package:
 
 ```bash
 pip install orbweaver-tools
 ```
 
-From source with Poetry:
+With Selenium support:
 
 ```bash
-poetry install
+pip install "orbweaver-tools[selenium]"
+```
+
+With scraping table/proxy parsing support:
+
+```bash
+pip install "orbweaver-tools[scraping]"
+```
+
+Everything:
+
+```bash
+pip install "orbweaver-tools[all]"
 ```
 
 ## Quick Start
 
-### Build a Selenium driver
-
 ```python
-from orb.spinner.core.driver import OrbDriver
-
-orb_driver = OrbDriver(use_pia=False)
-driver = orb_driver.get_webdriver(url="https://example.com")
-```
-
-### Send spoofed requests
-
-```python
-from bs4 import BeautifulSoup
+from orb.config import OrbConfig
 from orb.scraper.utils import spoof_request
 
-response = spoof_request("https://example.com", use_proxies=False)
-soup = BeautifulSoup(response.content, "html.parser")
+config = OrbConfig.from_env()
+response = spoof_request("https://example.com", config=config)
+print(response.status_code)
 ```
 
-### Human-like interactions
+## CLI
 
-```python
-from selenium.webdriver.common.by import By
-from orb.spinner.utils import slow_type, human_clicking
-
-input_box = driver.find_element(By.ID, "search")
-slow_type(input_box, "hello world", send_keys=True)
-
-button = driver.find_element(By.ID, "submit")
-human_clicking(driver, button)
+```bash
+orb version
+orb user-agent
+orb spoof-request https://example.com --no-proxy
+orb proxy-test http://1.2.3.4:8080 https://1.2.3.4:8080
 ```
+
+## Environment Variables
+
+- `ORB_REQUEST_TIMEOUT` (default: `15`)
+- `ORB_MAX_RETRIES` (default: `3`)
+- `ORB_BACKOFF_SECONDS` (default: `0.5`)
+- `ORB_USE_PROXIES` (`true`/`false`, default: `true`)
+- `ORB_USE_USER_AGENT` (`true`/`false`, default: `true`)
 
 ## Development
 
-Run tests:
-
 ```bash
-poetry run pytest -q
+poetry install --with dev --all-extras
+poetry run pytest
+poetry run ruff check .
+poetry run mypy
+poetry run bandit -q -r orb -x orb/common/vpn,orb/common/design,orb/spinner -s B311,B404,B603,B110
+poetry run pip-audit
 ```
 
-Build package artifacts:
+## Release
+
+1. Bump version in `pyproject.toml`.
+2. Update `CHANGELOG.md`.
+3. Build and publish:
 
 ```bash
 poetry build
-```
-
-## Publish to PyPI
-
-1. Create an account on [PyPI](https://pypi.org/).
-2. Create an API token and configure Poetry credentials:
-
-```bash
-poetry config pypi-token.pypi <your-token>
-```
-
-3. Publish:
-
-```bash
 poetry publish --build
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [LICENSE](LICENSE).
 
-## Notes
+## Responsible Use
 
-Use these tools responsibly and only against systems where you have permission to automate or scrape.
+Only run scraping/automation against systems where you are authorized to do so.
