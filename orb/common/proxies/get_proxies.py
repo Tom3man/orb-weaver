@@ -21,7 +21,7 @@ class GetProxies:
 
     def __init__(self) -> None:
         """
-        Initializes the GetProxies object and sets the current date and time.
+        Initialises the GetProxies object and sets the current date and time.
         """
         todays_datetime = datetime.now()
         self.date_now = todays_datetime.strftime("%Y-%m-%d")

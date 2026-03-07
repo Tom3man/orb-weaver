@@ -10,7 +10,7 @@ class TestProxy(unittest.TestCase):
     """
     Test case for the test_proxy function.
 
-    The TestProxy class contains test methods to verify the behavior of the test_proxy function
+    The TestProxy class contains test methods to verify the behaviour of the test_proxy function
     in different scenarios.
     """
 
@@ -23,7 +23,7 @@ class TestProxy(unittest.TestCase):
     @patch('logging.Logger.info')
     def test_working_proxy(self, mock_info, mock_get):
         """
-        Test the behavior of the test_proxy function for a working proxy.
+        Test the behaviour of the test_proxy function for a working proxy.
 
         This test method mocks the requests.get function to return a successful response (status_code = 200)
         and verifies that the test_proxy function returns True. It also checks if the expected log message
@@ -45,7 +45,7 @@ class TestProxy(unittest.TestCase):
     @patch('logging.Logger.error')
     def test_non_working_proxy(self, mock_error, mock_get):
         """
-        Test the behavior of the test_proxy function for a non-working proxy.
+        Test the behaviour of the test_proxy function for a non-working proxy.
 
         This test method mocks the requests.get function to return a failed response (status_code = 500)
         and verifies that the test_proxy function returns False. It also checks if the expected log message
@@ -67,7 +67,7 @@ class TestProxy(unittest.TestCase):
     @patch('logging.Logger.error')
     def test_connection_error(self, mock_error, mock_get):
         """
-        Test the behavior of the test_proxy function for a connection error.
+        Test the behaviour of the test_proxy function for a connection error.
 
         This test method mocks the requests.get function to raise a requests.exceptions.RequestException
         and verifies that the test_proxy function returns False. It also checks if the expected log message

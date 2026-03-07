@@ -11,7 +11,7 @@ class GetUserAgent:
 
     def __init__(self) -> None:
         """
-        Initializes the GetUserAgent object.
+        Initialises the GetUserAgent object.
         Sets up the UserAgent instance.
         """
         self.user_agent = UserAgent()

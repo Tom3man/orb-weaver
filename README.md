@@ -91,7 +91,18 @@ poetry publish --build
 
 See [CHANGELOG.md](CHANGELOG.md).
 
-## License
+## Documentation
+
+Full documentation is available at `https://tom3man.github.io/orb-weaver/`.
+
+You can build it locally with:
+
+```bash
+poetry install --with docs
+poetry run mkdocs serve
+```
+
+## Licence
 
 MIT. See [LICENSE](LICENSE).
 

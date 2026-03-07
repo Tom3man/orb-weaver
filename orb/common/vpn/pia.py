@@ -26,7 +26,7 @@ class PiaVpn:
 
     def __init__(self, executable_path: Optional[str] = None) -> None:
         """
-        Initialize the PiaVpn class.
+        Initialise the PiaVpn class.
 
         Sets the default piapath based on the operating system.
         """

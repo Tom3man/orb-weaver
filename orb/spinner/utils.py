@@ -1,5 +1,5 @@
 """
-This script provides several methods for simulating human behavior in browser automation.
+This script provides several methods for simulating human behaviour in browser automation.
 """
 
 import logging
@@ -64,7 +64,7 @@ def human_clicking(
     random_clicking: bool = True
 ):
     """
-    Imitate human behavior when clicking in browser automation.
+    Imitate human behaviour when clicking in browser automation.
 
     Args:
         driver (WebDriver): The WebDriver instance.

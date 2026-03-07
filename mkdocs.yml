@@ -1,0 +1,27 @@
+site_name: Orb Weaver Tools
+site_description: Documentation for orbweaver-tools
+site_url: https://tom3man.github.io/orb-weaver/
+repo_url: https://github.com/Tom3man/orb-weaver
+repo_name: Tom3man/orb-weaver
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - CLI: cli.md
+  - API Overview: api.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
