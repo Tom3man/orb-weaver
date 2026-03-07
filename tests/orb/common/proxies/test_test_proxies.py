@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from typing import Dict
 import requests
 
-from orb.common.proxies.test_proxies import test_proxy
+from orb.common.proxies.test_proxies import test_proxy as proxy_works
 
 
 class TestProxy(unittest.TestCase):
@@ -37,7 +37,7 @@ class TestProxy(unittest.TestCase):
         mock_response.status_code = 200
         mock_get.return_value = mock_response
         proxies = {'http': self.TEST_URL['HTTP'], 'https': self.TEST_URL['HTTPS']}
-        result = test_proxy(proxies)
+        result = proxy_works(proxies)
         self.assertTrue(result)
         mock_info.assert_called_with("https://proxy.example.com Proxy is working!")
 
@@ -59,7 +59,7 @@ class TestProxy(unittest.TestCase):
         mock_response.status_code = 500
         mock_get.return_value = mock_response
         proxies = {'http': self.TEST_URL['HTTP'], 'https': self.TEST_URL['HTTPS']}
-        result = test_proxy(proxies)
+        result = proxy_works(proxies)
         self.assertFalse(result)
         mock_error.assert_called_with("https://proxy.example.com Proxy is NOT working!")
 
@@ -79,7 +79,7 @@ class TestProxy(unittest.TestCase):
         """
         mock_get.side_effect = requests.exceptions.RequestException()
         proxies = {'http': self.TEST_URL['HTTP'], 'https': self.TEST_URL['HTTPS']}
-        result = test_proxy(proxies)
+        result = proxy_works(proxies)
         self.assertFalse(result)
         mock_error.assert_called_with("Unable to connect to the proxy.")
 

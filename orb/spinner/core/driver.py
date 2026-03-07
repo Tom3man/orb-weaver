@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Optional
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -60,6 +60,8 @@ class OrbDriver:
         """
         Change IP address using PIA VPN.
         """
+        if self.pia is None:
+            raise RuntimeError("PIA VPN support is disabled. Initialise OrbDriver with use_pia=True.")
         if self.pia.vpn_status() != 'Connected':
             self.pia.connect()
         else:
@@ -75,12 +77,12 @@ class OrbDriver:
         self.webdriver_options.add_argument("--headless")
         return self
 
-    def set_user_agent(self) -> Dict[str, str]:
+    def set_user_agent(self) -> str:
         """
         Set a random user-agent for the WebDriver.
 
         Returns:
-            OrbDriver: The OrbDriver instance for method chaining.
+            str: Random user-agent string.
         """
         user_agent = GetUserAgent().headers_dict['User-Agent']
         log.info(f"Initialising WebDriver with user-agent: {user_agent}")

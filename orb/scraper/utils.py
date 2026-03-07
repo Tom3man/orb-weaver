@@ -15,7 +15,8 @@ log = logging.getLogger(__name__)
 def spoof_request(
     url: str,
     use_proxies: bool = True,
-    use_user_agent: bool = True
+    use_user_agent: bool = True,
+    timeout: int = 15,
 ) -> requests.Response:
     """
     Send a request to a URL with a spoofed user agent and optional proxies.
@@ -39,6 +40,6 @@ def spoof_request(
     # Get a random proxy
     if use_proxies:
         proxies = GetProxies().proxy_dict
-        log.info(f"Using proxy with HTTPS: {proxies['HTTPS']}")
+        log.info(f"Using proxy with HTTPS: {proxies['https']}")
 
-    return requests.get(url, headers=headers, proxies=proxies)
+    return requests.get(url, headers=headers, proxies=proxies, timeout=timeout)

@@ -4,6 +4,7 @@ from typing import Dict
 import requests
 
 log = logging.getLogger(__name__)
+__test__ = False
 
 
 def test_proxy(proxies: Dict[str, str]) -> bool:

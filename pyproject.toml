@@ -1,22 +1,42 @@
 [tool.poetry]
-name = "orb"
-version = "0.1.0"
-description = ""
+name = "orb-weaver"
+version = "1.1.0"
+description = "Stealth-oriented utilities for web scraping with rotating user agents, proxies, and Selenium helpers."
 authors = ["Tom Freeman"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/Tom3man/orb-weaver"
+repository = "https://github.com/Tom3man/orb-weaver"
+keywords = ["web-scraping", "selenium", "proxies", "automation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries",
+]
 packages = [{ include = "orb" }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<4.0"
 bs4 = "^0.0.1"
 pandas = "^2.1.4"
 requests = "^2.31.0"
 selenium = "^4.16.0"
 webdriver-manager = "^4.0.1"
 fake-useragent = "^1.4.0"
-ipykernel = "^6.29.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.0"
+pytest = "^8.3.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

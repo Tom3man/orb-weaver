@@ -1,10 +1,6 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-from selenium.webdriver import Chrome
-from selenium.webdriver.common.proxy import ProxyType
-
-from orb import REPO_PATH
 from orb.spinner.core.driver import OrbDriver
 
 
@@ -12,37 +8,39 @@ class OrbDriverTestCase(unittest.TestCase):
     """
     Unit tests for the OrbDriver class.
     """
-
-    WELCOME_PAGE_PATH = f"{REPO_PATH}/proxy_info.html"
-
-    def setUp(self):
+    @patch("orb.spinner.core.driver.Service")
+    @patch("orb.spinner.core.driver.webdriver.Chrome")
+    @patch("orb.spinner.core.driver.ChromeDriverManager.install")
+    def test_get_webdriver(self, mock_install, mock_chrome, mock_service):
         """
-        Set up the test case by creating mock objects for the driver and proxy.
+        Test the get_webdriver method without making network calls.
         """
-        self.mock_driver = MagicMock(spec=Chrome)
-        self.mock_proxy = MagicMock(spec=ProxyType)
-        self.mock_driver.proxy = self.mock_proxy
+        mock_install.return_value = "/tmp/chromedriver"
+        mock_service.return_value = MagicMock()
+        mock_driver = MagicMock()
+        mock_chrome.return_value = mock_driver
 
-    def test_get_webdriver(self):
-        """
-        Test the get_webdriver method of OrbDriver class.
-        """
-        # Create an instance of OrbDriver
-        orb_driver = OrbDriver()
-
-        # Set the mock driver
-        orb_driver.set_driver(self.mock_driver)
-
-        # Call the get_webdriver() method
+        orb_driver = OrbDriver(use_pia=False)
         result = orb_driver.get_webdriver()
 
-        # Assertions
-        self.assertEqual(result, self.mock_driver)
-        self.mock_driver.get.assert_called_with(f'file://{self.WELCOME_PAGE_PATH}')
+        self.assertEqual(result, mock_driver)
+        mock_chrome.assert_called_once()
+        mock_driver.get.assert_not_called()
 
-        # Check if a proxy is being used correctly
-        self.assertTrue(orb_driver.driver.proxy is not None)
-        self.assertEqual(orb_driver.driver.proxy, self.mock_proxy)
+    @patch("orb.spinner.core.driver.Service")
+    @patch("orb.spinner.core.driver.webdriver.Chrome")
+    @patch("orb.spinner.core.driver.ChromeDriverManager.install")
+    def test_get_webdriver_with_url(self, mock_install, mock_chrome, mock_service):
+        mock_install.return_value = "/tmp/chromedriver"
+        mock_service.return_value = MagicMock()
+        mock_driver = MagicMock()
+        mock_chrome.return_value = mock_driver
+
+        orb_driver = OrbDriver(use_pia=False)
+        result = orb_driver.get_webdriver(url="https://example.com")
+
+        self.assertEqual(result, mock_driver)
+        mock_driver.get.assert_called_once_with(url="https://example.com")
 
 
 if __name__ == '__main__':
