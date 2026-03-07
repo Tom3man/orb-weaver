@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "orbweaver-tools"
-version = "1.3.1"
+version = "1.3.2"
 description = "Stealth-oriented utilities for web scraping with rotating user agents, proxies, and Selenium helpers."
 authors = ["Tom Freeman"]
 license = "MIT"
@@ -88,3 +88,9 @@ files = ["orb/cli.py", "orb/config.py", "orb/logging_utils.py", "orb/net.py", "o
 [tool.bandit]
 exclude_dirs = ["tests", "orb/common/vpn", "orb/common/design", "orb/spinner"]
 skips = ["B311", "B404", "B603"]
+
+
+[project.urls]
+Homepage = "https://github.com/Tom3man/orb-weaver"
+Documentation = "https://tom3man.github.io/orb-weaver/"
+Repository = "https://github.com/Tom3man/orb-weaver"
