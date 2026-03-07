@@ -15,7 +15,7 @@ Utilities for stealth-oriented web scraping with Selenium helpers, rotating head
 From PyPI (after publish):
 
 ```bash
-pip install orb-weaver
+pip install orbweaver-tools
 ```
 
 From source with Poetry:

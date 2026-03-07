@@ -6,7 +6,7 @@ MODULE_PATH = os.path.dirname(os.path.realpath(__file__))
 REPO_PATH = os.path.dirname(MODULE_PATH)
 
 try:
-    __version__ = version("orb-weaver")
+    __version__ = version("orbweaver-tools")
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
