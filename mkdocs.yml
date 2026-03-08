@@ -1,8 +1,8 @@
-site_name: Orb Weaver Tools
-site_description: Documentation for orbweaver-tools
-site_url: https://tom3man.github.io/orb-weaver/
-repo_url: https://github.com/Tom3man/orb-weaver
-repo_name: Tom3man/orb-weaver
+site_name: SQLite Forge
+site_description: Documentation for sqlite-forge
+site_url: https://tom3man.github.io/sqlite-forge/
+repo_url: https://github.com/Tom3man/sqlite-forge
+repo_name: Tom3man/sqlite-forge
 
 theme:
   name: material
@@ -15,9 +15,7 @@ theme:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
-  - CLI: cli.md
   - API Overview: api.md
-  - Contributing: contributing.md
   - Changelog: changelog.md
 
 markdown_extensions:

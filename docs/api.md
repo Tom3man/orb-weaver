@@ -1,16 +1,15 @@
 # API Overview
 
-## Core Modules
+## `sqlite_forge.SqliteDatabase`
 
-- `orb.config` - runtime configuration model
-- `orb.net` - request retry/backoff helper
-- `orb.scraper.utils` - spoofed request helper
-- `orb.spinner.core.driver` - Selenium driver wrapper
-- `orb.logging_utils` - logging setup helper
+Main entry point for schema-driven table management.
 
-## Main Entry Points
+Useful methods:
 
-- `OrbConfig.from_env()`
-- `spoof_request(...)`
-- `OrbDriver(...).get_webdriver(...)`
-- `setup_logging(...)`
+- `create_table(overwrite=False)`
+- `drop_table()`
+- `exists()`
+- `ingest_dataframe(df, load_date=False, overwrite=False)`
+- `execute_query(query)`
+- `fetch_table(limit=None)`
+- `export_table(output_path, format="csv", limit=None)`

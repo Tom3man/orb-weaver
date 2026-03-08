@@ -1,28 +1,16 @@
-# Orb Weaver Tools
+# SQLite Forge
 
-Orb Weaver Tools provides practical utilities for web automation and scraping workflows.
+SQLite Forge is a lightweight toolkit for schema-driven SQLite table management in Python.
 
-## What You Get
+## Core Features
 
-- `OrbDriver` helper for Selenium sessions
-- Spoofed HTTP requests with rotating headers and optional proxies
-- Lightweight CLI for common operations
-- Retry and backoff helpers for network reliability
+- Create/drop/check tables from class-defined schema
+- Ingest pandas DataFrames
+- Execute SQL queries into DataFrames
+- Fetch/export table data
 
 ## Install
 
 ```bash
-pip install orbweaver-tools
+pip install sqlite-forge
 ```
-
-Install with all extras:
-
-```bash
-pip install "orbweaver-tools[all]"
-```
-
-## Next Steps
-
-- Follow the [Getting Started](getting-started.md) guide
-- Explore [CLI usage](cli.md)
-- Review the [API overview](api.md)

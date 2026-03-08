@@ -1,89 +1,90 @@
-# Orb Weaver Tools
+# SQLite Forge
 
-Utilities for stealth-oriented scraping workflows: Selenium driver setup, rotating headers, proxy support, and browser interaction helpers.
+SQLite Forge is a lightweight toolkit that helps you declare and maintain SQLite tables from Python. Define your schema once, then manage tables, run queries, ingest pandas `DataFrame` objects, and export results.
 
-## Features
+## Highlights
 
-- `OrbDriver` Selenium bootstrap with optional PIA VPN support
-- Spoofed requests with rotating headers and optional proxies
-- Proxy harvesting and validation helpers
-- Human-like browser interaction utilities
-- CLI for common actions (`orb version`, `orb user-agent`, `orb spoof-request`)
-- Retry/backoff for network calls
+- Declarative table definitions with schemas and optional multi-column primary keys
+- Safe helpers to create/drop tables and check existence
+- DataFrame ingestion with optional incremental overwrite support
+- Query execution that returns pandas `DataFrame` objects
+- Table export helpers for `csv`, `json`, and `parquet`
 
 ## Installation
 
-Base package:
-
 ```bash
-pip install orbweaver-tools
+pip install sqlite-forge
 ```
 
-With Selenium support:
+For development:
 
 ```bash
-pip install "orbweaver-tools[selenium]"
-```
-
-With scraping table/proxy parsing support:
-
-```bash
-pip install "orbweaver-tools[scraping]"
-```
-
-Everything:
-
-```bash
-pip install "orbweaver-tools[all]"
+git clone https://github.com/Tom3man/sqlite-forge.git
+cd sqlite-forge
+poetry install --with dev --with docs
 ```
 
 ## Quick Start
 
 ```python
-from orb.config import OrbConfig
-from orb.scraper.utils import spoof_request
+from pathlib import Path
 
-config = OrbConfig.from_env()
-response = spoof_request("https://example.com", config=config)
-print(response.status_code)
+import pandas as pd
+
+from sqlite_forge import SqliteDatabase
+
+
+class ExampleTable(SqliteDatabase):
+    DEFAULT_PATH = "example_table"
+    PRIMARY_KEY = ("id",)
+    DEFAULT_SCHEMA = {
+        "id": "INTEGER",
+        "name": "TEXT",
+        "score": "REAL",
+    }
+
+
+db = ExampleTable(database_path=Path("./data"))
+db.create_table(overwrite=True)
+
+db.ingest_dataframe(
+    pd.DataFrame(
+        [
+            {"id": 1, "name": "Alice", "score": 9.2},
+            {"id": 2, "name": "Bob", "score": 8.7},
+        ]
+    )
+)
+
+print(db.fetch_table())
+db.export_table("./data/example_table.csv", format="csv")
 ```
-
-## CLI
-
-```bash
-orb version
-orb user-agent
-orb spoof-request https://example.com --no-proxy
-orb proxy-test http://1.2.3.4:8080 https://1.2.3.4:8080
-```
-
-## Environment Variables
-
-- `ORB_REQUEST_TIMEOUT` (default: `15`)
-- `ORB_MAX_RETRIES` (default: `3`)
-- `ORB_BACKOFF_SECONDS` (default: `0.5`)
-- `ORB_USE_PROXIES` (`true`/`false`, default: `true`)
-- `ORB_USE_USER_AGENT` (`true`/`false`, default: `true`)
 
 ## Development
 
 ```bash
-poetry install --with dev --all-extras
 poetry run pytest
 poetry run ruff check .
 poetry run mypy
-poetry run bandit -q -r orb -x orb/common/vpn,orb/common/design,orb/spinner -s B311,B404,B603,B110
-poetry run pip-audit
+poetry build
+```
+
+## Documentation
+
+- Docs site: https://tom3man.github.io/sqlite-forge/
+- Build locally:
+
+```bash
+poetry run mkdocs serve
 ```
 
 ## Release
 
 1. Bump version in `pyproject.toml`.
 2. Update `CHANGELOG.md`.
-3. Build and publish:
+3. Publish:
 
 ```bash
-poetry build
 poetry publish --build
 ```
 
@@ -91,21 +92,6 @@ poetry publish --build
 
 See [CHANGELOG.md](CHANGELOG.md).
 
-## Documentation
-
-Full documentation is available at `https://tom3man.github.io/orb-weaver/`.
-
-You can build it locally with:
-
-```bash
-poetry install --with docs
-poetry run mkdocs serve
-```
-
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
-
-## Responsible Use
-
-Only run scraping/automation against systems where you are authorized to do so.

@@ -1,26 +1,24 @@
 # Getting Started
 
-## Install for Development
-
-```bash
-poetry install --with dev --all-extras --with docs
-```
-
-## First Request
-
 ```python
-from orb.config import OrbConfig
-from orb.scraper.utils import spoof_request
+from pathlib import Path
+import pandas as pd
+from sqlite_forge import SqliteDatabase
 
-config = OrbConfig.from_env()
-response = spoof_request("https://example.com", config=config)
-print(response.status_code)
+
+class ExampleTable(SqliteDatabase):
+    DEFAULT_PATH = "example_table"
+    PRIMARY_KEY = ("id",)
+    DEFAULT_SCHEMA = {
+        "id": "INTEGER",
+        "name": "TEXT",
+        "score": "REAL",
+    }
+
+
+db = ExampleTable(database_path=Path("./data"))
+db.create_table(overwrite=True)
+db.ingest_dataframe(pd.DataFrame([{"id": 1, "name": "Alice", "score": 9.2}]))
+print(db.fetch_table())
+db.export_table("./data/example_table.csv", format="csv")
 ```
-
-## Environment Variables
-
-- `ORB_REQUEST_TIMEOUT`
-- `ORB_MAX_RETRIES`
-- `ORB_BACKOFF_SECONDS`
-- `ORB_USE_PROXIES`
-- `ORB_USE_USER_AGENT`
